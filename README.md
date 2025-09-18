@@ -1,6 +1,6 @@
 # Assytics
 ### purpose
-This project seeks to profile the performance of your `.ass` subtitle file. This is intended for fansub groups that make heavy use of masking and typesetting (or other visual tricks) in order to provide a much more immersive viewing experience.
+This project seeks to profile the performance of your `.ass` subtitle file. This is intended for fansub groups that make heavy use of masking and typesetting (or other visual tricks) in order to provide a much more immersive viewing experience.  
 Includes minor modifications to improve plot handling.  
 All credit to [specter-fansub-tools/assytics](https://github.com/N0r01/specter-fansub-tools/tree/main/assytics).
 
