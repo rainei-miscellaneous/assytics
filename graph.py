@@ -63,12 +63,10 @@ def graph_libass_stats(samples, title, output=None, xtick_interval=180):
         constrained_layout=False
     )
 
-    # Background noir
     fig.patch.set_facecolor("#1e1e1e")
     for ax in subplots:
         ax.set_facecolor("#1e1e1e")
 
-    # White title 
     fig.suptitle(f'Analytics for {os.path.basename(title)}',
                  fontsize=16, y=0.99, color="white")
 
@@ -84,18 +82,15 @@ def graph_libass_stats(samples, title, output=None, xtick_interval=180):
         ))
         subplot.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: sec_to_mm_ss_str(x)))
 
-        # Light-white grid
         subplot.grid(visible=True, which='major', axis='x',
                      color='white', alpha=0.3, linewidth=0.8)
         subplot.grid(visible=True, which='minor', axis='x',
                      color='white', alpha=0.15, linestyle=":", linewidth=0.6)
 
-        # White tick / label
         subplot.tick_params(colors='white')
         subplot.xaxis.label.set_color('white')
         subplot.yaxis.label.set_color('white')
 
-        # Y-axis formatter
         if y_label == "bytes":
             subplot.yaxis.set_major_formatter(Base10BytesFormatter(max_y))
         elif y_label == "counts":
@@ -105,19 +100,25 @@ def graph_libass_stats(samples, title, output=None, xtick_interval=180):
 
         subplot.set_xlim([time_domain[0], time_domain[-1]])
 
-        if graph_label == "frame render time":
+        # --- FIXED THRESHOLDS + LEGEND FOR FIRST 3 METRICS ---
+        if graph_label == "total bitmap sizes for frame":
+            subplot.set_ylim([0, 15 * 1000 * 1000])
+            subplot.axhline(y=10 * 1000 * 1000, color="red", linestyle="--", label="10 MB threshold")
+            subplot.axhline(y=15 * 1000 * 1000, color="yellow", linestyle=":", label="Max scale = 15 MB")
+            subplot.legend(loc='upper right', fontsize=8, facecolor="#1e1e1e", edgecolor="white", labelcolor="white")
+
+        elif graph_label == "largest bitmap size in frame":
+            subplot.set_ylim([0, 5 * 1000 * 1000])
+            subplot.axhline(y=5 * 1000 * 1000, color="yellow", linestyle=":", label="Max scale = 5 MB")
+            subplot.legend(loc='upper right', fontsize=8, facecolor="#1e1e1e", edgecolor="white", labelcolor="white")
+
+        elif graph_label == "bitmap counts":
+            subplot.set_ylim([0, 1000])
+            subplot.axhline(y=1000, color="yellow", linestyle=":", label="Max scale = 1000")
+            subplot.legend(loc='upper right', fontsize=8, facecolor="#1e1e1e", edgecolor="white", labelcolor="white")
+
+        elif graph_label == "frame render time":
             subplot.set_ylim([0, 0.3])
-        else:
-            subplot.set_ylim([0, max_y])
-
-        subplot.plot(time_domain, float_data, linewidth=1.0, alpha=0.9, color="deepskyblue")
-        subplot.set_title(graph_label, fontsize=11, color="white")
-
-        # Rotate ticks + monospace
-        plt.setp(subplot.get_xticklabels(), rotation=30, ha="right", fontsize=9, family="monospace")
-        plt.setp(subplot.get_yticklabels(), family="monospace")
-
-        if graph_label == "frame render time":
             subplot.axhline(y=0.25, color="red", linestyle="--", label="0.25s threshold")
 
             max_val = max(float_data)
@@ -128,6 +129,15 @@ def graph_libass_stats(samples, title, output=None, xtick_interval=180):
                             label=f"Max: {max_val:.3f}s | {sec_to_mm_ss_str(max_time)}")
 
             subplot.legend(loc='upper right', fontsize=8, facecolor="#1e1e1e", edgecolor="white", labelcolor="white")
+
+        else:
+            subplot.set_ylim([0, max_y])
+
+        subplot.plot(time_domain, float_data, linewidth=1.0, alpha=0.9, color="deepskyblue")
+        subplot.set_title(graph_label, fontsize=11, color="white")
+
+        plt.setp(subplot.get_xticklabels(), rotation=30, ha="right", fontsize=9, family="monospace")
+        plt.setp(subplot.get_yticklabels(), family="monospace")
 
     fig.tight_layout(rect=[0, 0, 1, 0.96])
 
